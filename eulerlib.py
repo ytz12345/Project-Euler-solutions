@@ -289,3 +289,10 @@ def next_permutation(p):
             for j in range(n):
                 p[j] = q[j]
             return True
+
+def sqr(x):return x * x
+
+def is_sqr(x):
+    from math import sqrt
+    y = int(sqrt(x))
+    return sqr(y - 1) == x or sqr(y) == x or sqr(y + 1) == x 
