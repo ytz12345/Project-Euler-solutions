@@ -271,3 +271,21 @@ class Poker_Player():
             for i in range(len(self.cmp_val))[::-1]:
                 if self.cmp_val[i] != another_player.cmp_val[i]:
                     return self.cmp_val[i] > another_player.cmp_val[i]
+
+def next_permutation(p):
+    n = len(p)
+    if sum(p[i] < p[i + 1] for i in range(n - 1)) == 0:
+        return False
+    
+    pos = -1
+    for i in range(n - 1)[::-1]:
+        if p[i] < p[i + 1]:
+            pos = i
+            break
+    
+    for i in range(n)[::-1]:
+        if p[i] > p[pos]:
+            q = p[:pos] + [p[i]] + p[i + 1:][::-1] + [p[pos]] + p[pos + 1:i][::-1]
+            for j in range(n):
+                p[j] = q[j]
+            return True
