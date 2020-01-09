@@ -311,3 +311,12 @@ class point(object):
     @staticmethod
     def cross(a, b):
         return a.x * b.y - a.y * b.x
+
+def getFib(n, Mod = -1):#f1 = f2 = 1, return f[1,...,n]
+    f = [0 for i in range(n + 1)]
+    f[1] = 1
+    for i in range(2, n + 1):
+        f[i] = f[i - 1] + f[i - 2]
+        if Mod != -1:
+            f[i] %= Mod
+    return f

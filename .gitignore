@@ -1,7 +1,8 @@
-__pycache__/*
-*.pyc
+.vscode
+
+__pycache__
 
 test.py
 test.cpp
-test.c
+test.txt
 test
