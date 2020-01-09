@@ -296,3 +296,18 @@ def is_sqr(x):
     from math import sqrt
     y = int(sqrt(x))
     return sqr(y - 1) == x or sqr(y) == x or sqr(y + 1) == x 
+
+class point(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, other):
+        return point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return point(self.x - other.x, self.y - other.y)
+
+    @staticmethod
+    def cross(a, b):
+        return a.x * b.y - a.y * b.x
