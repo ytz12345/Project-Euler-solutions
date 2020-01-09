@@ -309,6 +309,9 @@ class point(object):
     def __sub__(self, other):
         return point(self.x - other.x, self.y - other.y)
 
+    def __mul__(self, other):
+        return self.x * other.x + self.y * other.y
+
     @staticmethod
     def cross(a, b):
         return a.x * b.y - a.y * b.x
