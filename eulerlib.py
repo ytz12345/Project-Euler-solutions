@@ -1,3 +1,4 @@
+import math
 #return p, v for i < n
 def get_prime(n): 
     p, v = [0 for i in range(n)], [0 for i in range(n)]
@@ -312,7 +313,7 @@ class point(object):
     def cross(a, b):
         return a.x * b.y - a.y * b.x
 
-def getFib(n, Mod = -1):#f1 = f2 = 1, return f[1,...,n]
+def get_fib(n, Mod = -1):#f1 = f2 = 1, return f[1,...,n]
     f = [0 for i in range(n + 1)]
     f[1] = 1
     for i in range(2, n + 1):
@@ -320,3 +321,16 @@ def getFib(n, Mod = -1):#f1 = f2 = 1, return f[1,...,n]
         if Mod != -1:
             f[i] %= Mod
     return f
+
+def is_pandigital(s):
+    s = set(str(s))
+    return len(s) == 9 and '0' not in s
+
+sqrt_5 = math.sqrt(5)
+def get_fib_front_k(n, k):
+    log_fib_n = (n * math.log((sqrt_5 + 1) / 2) - math.log(sqrt_5)) / math.log(10)
+    length = int(log_fib_n)
+    if length + 1 <= k:
+        return int(pow(10, log_fib_n))
+    else:
+        return int(pow(10, log_fib_n - (length - k + 1)))
