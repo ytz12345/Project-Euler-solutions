@@ -1,4 +1,3 @@
-import math
 #return p, v for i < n
 def get_prime(n): 
     p, v = [0 for i in range(n)], [0 for i in range(n)]
@@ -329,11 +328,48 @@ def is_pandigital(s):
     s = set(str(s))
     return len(s) == 9 and '0' not in s
 
-sqrt_5 = math.sqrt(5)
+#牛顿迭代开根
+def sqrt(a, k = 20):
+    if a == 0:return 0
+    assert a > 0
+    x = 1
+    for i in range(k):
+        x += a / x / 2 - x / 2
+    return x
+
 def get_fib_front_k(n, k):
-    log_fib_n = (n * math.log((sqrt_5 + 1) / 2) - math.log(sqrt_5)) / math.log(10)
+    from math import log
+    sqrt_5 = sqrt(5)
+    log_fib_n = (n * log((sqrt_5 + 1) / 2) - log(sqrt_5)) / log(10)
     length = int(log_fib_n)
     if length + 1 <= k:
         return int(pow(10, log_fib_n))
     else:
         return int(pow(10, log_fib_n - (length - k + 1)))
+
+#装饰器
+class memoize(object):
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+    
+    def __call__(self, *args):
+        if args not in self.cache:
+            self.cache[args] = self.func(*args)
+        return self.cache[args]
+        
+if __name__ == '__main__':
+
+    @memoize
+    def test(x):
+        z = 0
+        for i in range(10 ** 6):
+            z += i * i
+        return ((z * z // z + 1) // z)
+
+    from time import time
+    print(time())
+    print(test(1))
+    print(time())
+    print(test(1))
+    print(time())
