@@ -6,6 +6,7 @@ using std::vector;
 using std::pair;
 using std::sort;
 
+typedef unsigned int uint;
 typedef long long ll;
 typedef pair<int, int> piir;
 typedef pair<ll, ll> pr;
@@ -135,6 +136,7 @@ void get_prime(int n, int *p, int *v) {
 }
 
 void get_phi(int n, int *phi, int *p, int *v) {
+    phi[1] = 1;
     for (int i = 2; i < n; i ++) {
         if (!v[i]) phi[i] = i - 1, p[++ p[0]] = i;
         for (int j = 1; j <= p[0] && i * p[j] < n; j ++) {
