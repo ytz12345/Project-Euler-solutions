@@ -5,12 +5,18 @@
 using std::vector;
 using std::pair;
 using std::sort;
+using std::unique;
+using std::cout;
+using std::endl;
+using std::map;
+using std::cin;
 
 typedef unsigned int uint;
 typedef long long ll;
 typedef pair<int, int> piir;
 typedef pair<ll, ll> pr;
 typedef vector<pr> vp;
+typedef __int128 int128;
 
 ll sqr(ll x);
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);// is sqr(a) + sqr(b) == sqr(c)
@@ -19,6 +25,8 @@ void get_prime(int n, int *p, int *v);//获取小于n的质数放入p,v[i]=1/0�
 void get_phi(int n, int *phi, int *p, int *v);//获取质数的基础上添加了计算欧拉函数
 bool is_prime(ll x);
 ll gcd(ll x, ll y);
+void getFac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为个数
+void getRev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 
 struct Sudoku {
     int sum;
@@ -233,4 +241,36 @@ namespace PollardRho {
 
 bool is_prime(ll x) {
     return !(PollardRho::millerRabin(x));
+}
+
+void getFac(ll n, ll *f) {
+    PollardRho::getFac(n, f);
+    sort (f + 1, f + f[0] + 1);
+    f[0] = unique(f + 1, f + f[0] + 1) - f - 1;
+}
+
+std::ostream& operator<<(std::ostream& os, int128 t) {
+    if (t==0) return os << "0";
+    if (t<0) {
+        os<<"-";
+        t=-t;
+    }
+    int a[50],ai=0;
+    memset(a,0,sizeof a);
+    while (t!=0){
+        a[ai++]=t%10;
+        t/=10;
+    }
+    for (int i=1;i<=ai;i++) os<<abs(a[ai-i]);
+    return os<<"";
+}
+
+void getRev(int n, int *fac, int *inv, int Mod) {
+    fac[0] = 1, inv[0] = 1, inv[1] = 1;
+    for (int i = 1; i <= n; i ++) {
+        fac[i] = 1ll * fac[i - 1] * i % Mod;
+        if (i != 1) inv[i] = 1ll * inv[Mod % i] * (Mod - Mod / i) % Mod;
+    }
+    for (int i = 2; i <= n; i ++) 
+        inv[i] = 1ll * inv[i] * inv[i - 1] % Mod;
 }
