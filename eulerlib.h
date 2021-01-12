@@ -29,6 +29,7 @@ bool is_prime(ll x);
 ll gcd(ll x, ll y);
 void getFac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为个数
 void getRev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
+void print_time();//输出程序运行时间
 
 struct Sudoku {
     int sum;
@@ -106,6 +107,10 @@ struct Sudoku {
         puts(""); puts("");
     }
 };
+
+void print_time() {
+    cout << "Time elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
+}
 
 ll sqr(ll x) {return x * x;}
 
