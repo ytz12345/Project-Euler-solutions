@@ -15,6 +15,7 @@ using std::unordered_map;
 using std::lower_bound;
 using std::max;
 using std::ios;
+using std::string;
 
 typedef unsigned int uint;
 typedef long long ll;
