@@ -12,6 +12,9 @@ using std::map;
 using std::cin;
 using std::set;
 using std::unordered_map;
+using std::lower_bound;
+using std::max;
+using std::ios;
 
 typedef unsigned int uint;
 typedef long long ll;
