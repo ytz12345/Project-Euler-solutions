@@ -32,6 +32,7 @@ void get_phi(int n, int *phi, int *p, int *v);//获取质数的基础上添加�
 bool is_prime(ll x);
 ll gcd(ll x, ll y);
 void getFac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为个数
+#define getInv getRev
 void getRev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 void print_time();//输出程序运行时间
 
