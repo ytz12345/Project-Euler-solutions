@@ -11,6 +11,7 @@ def get_prime(n):
             v[i * p[j]] = 1
             if i % p[j] == 0:
                 break
+    v[1] = 1
     return p, v
 
 def digit_sum(x):
