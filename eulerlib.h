@@ -16,6 +16,7 @@ using std::lower_bound;
 using std::max;
 using std::ios;
 using std::string;
+using std::swap;
 
 typedef unsigned int uint;
 typedef long long ll;
@@ -25,6 +26,7 @@ typedef vector<pr> vp;
 typedef __int128 int128;
 
 ll sqr(ll x);
+bool is_sqr(ll x);
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);// is sqr(a) + sqr(b) == sqr(c)
 void get_ab_from_c(ll c, vector<pr> &v);//传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
 void get_prime(int n, int *p, int *v);//获取小于n的质数放入p,v[i]=1/0表示是/否为质数
@@ -35,6 +37,7 @@ void getFac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为
 #define getInv getRev
 void getRev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 void print_time();//输出程序运行时间
+ll get_palindrome(ll x, int num, bool isOdd);//通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
 
 struct Sudoku {
     int sum;
@@ -285,4 +288,21 @@ void getRev(int n, int *fac, int *inv, int Mod) {
     }
     for (int i = 2; i <= n; i ++) 
         inv[i] = 1ll * inv[i] * inv[i - 1] % Mod;
+}
+
+bool is_sqr(ll x) {
+    ll y = sqrt(x);
+    return sqr(y - 1) == x || sqr(y) == x || sqr(y + 1) == x; 
+}
+
+ll get_palindrome(ll x, int num, bool isOdd = false) {
+    static char ch[20]; 
+    static ll y;
+    ch[0] = y = 0;
+    while (x > 0) ch[++ ch[0]] = x % 10, x /= 10;
+    for (int i = 1, j = ch[0]; i < j; i ++, j --) swap(ch[i], ch[j]);
+    if (isOdd) ch[++ ch[0]] = num;
+    for (int i = ch[0] - isOdd; i > 0; i --) ch[++ ch[0]] = ch[i];
+    for (int i = 1; i <= ch[0]; i ++) y = y * 10 + ch[i];
+    return y;
 }
