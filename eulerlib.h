@@ -38,6 +38,7 @@ void getFac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为
 void getRev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 void print_time();//输出程序运行时间
 ll get_palindrome(ll x, int num, bool isOdd);//通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
+ll qpow(ll x, ll k, ll p); // (x^k)%p
 
 struct Sudoku {
     int sum;
@@ -305,4 +306,8 @@ ll get_palindrome(ll x, int num, bool isOdd = false) {
     for (int i = ch[0] - isOdd; i > 0; i --) ch[++ ch[0]] = ch[i];
     for (int i = 1; i <= ch[0]; i ++) y = y * 10 + ch[i];
     return y;
+}
+
+ll qpow(ll x, ll k, ll p) {
+    return PollardRho::qpow(x, k, p);
 }
