@@ -17,6 +17,7 @@ using std::max;
 using std::ios;
 using std::string;
 using std::swap;
+using std::min;
 
 typedef unsigned int uint;
 typedef long long ll;
