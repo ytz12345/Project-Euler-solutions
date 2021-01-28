@@ -18,6 +18,7 @@ using std::ios;
 using std::string;
 using std::swap;
 using std::min;
+using std::next_permutation;
 
 typedef unsigned int uint;
 typedef long long ll;
@@ -40,6 +41,7 @@ void getRev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对
 void print_time();//输出程序运行时间
 ll get_palindrome(ll x, int num, bool isOdd);//通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
 ll qpow(ll x, ll k, ll p); // (x^k)%p
+template<class T>void sort_and_unique(vector<T> &v);
 
 struct Sudoku {
     int sum;
@@ -311,4 +313,9 @@ ll get_palindrome(ll x, int num, bool isOdd = false) {
 
 ll qpow(ll x, ll k, ll p) {
     return PollardRho::qpow(x, k, p);
+}
+
+template<class T>void sort_and_unique(vector<T> &v) {
+    sort (v.begin(), v.end());
+    v.resize(unique(v.begin(), v.end()) - v.begin());
 }
