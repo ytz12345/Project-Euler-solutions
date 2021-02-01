@@ -348,6 +348,43 @@ def get_fib_front_k(n, k):
     else:
         return int(pow(10, log_fib_n - (length - k + 1)))
 
+# (sqrt(a)+b) / c = k + 1 / ()
+def calc_sqrt_in_continued_fraction(x):
+    from math import sqrt
+
+    a, b, c = x, 0, 1
+    ks = []
+
+    vis = {}
+    while True:
+        if (a, b, c) in vis: break
+        vis[(a, b, c)] = True
+
+        k = int((sqrt(a) + b) / c)
+        ks.append(k)
+        b -= k * c
+        c = (a - b * b) // c
+        b = -b
+
+    return ks
+
+# 逼近sqrt(x)的分数迭代器
+def get_fraction_by_sqrt(x):
+    ks = calc_sqrt_in_continued_fraction(x)
+    l = len(ks)
+
+    def n_k(i):
+        if i < l: return ks[i]
+        return ks[(i - 1) % (l - 1) + 1]
+
+    i = 1
+    while True:
+        p, q = n_k(i), 1
+        for j in range(i)[::-1]:
+            p, q = q + p * n_k(j), p
+        yield p, q
+        i += 1
+
 #装饰器
 class memoize(object):
     def __init__(self, func):
