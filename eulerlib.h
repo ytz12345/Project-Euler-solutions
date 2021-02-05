@@ -43,8 +43,9 @@ void print_time();//输出程序运行时间
 ll get_palindrome(ll x, int num, bool isOdd);//通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
 ll qpow(ll x, ll k, ll p); // (x^k)%p
 template<class T>void sort_and_unique(vector<T> &v);
+void gauss(vector<vector<long double> > &A, int n); //高消, n个式子，每行n个参数，和1个结果。 结果在A[0...n-1][n]里
 
-struct Sudoku {
+struct Sudoku { //数独，get获取输入
     int sum;
     int used[10];
     int t[10][10];
@@ -319,4 +320,35 @@ ll qpow(ll x, ll k, ll p) {
 template<class T>void sort_and_unique(vector<T> &v) {
     sort (v.begin(), v.end());
     v.resize(unique(v.begin(), v.end()) - v.begin());
+}
+
+void gauss(vector<vector<long double> > &A, int n) {
+    //#define PRINT_A
+    #ifdef PRINT_A
+        for (int i = 0; i < n; i ++) {
+            for (int j = 0; j <= n; j ++) cout << A[i][j] << ' ';
+            cout << endl;
+        }
+    #endif
+
+	for (int i = 0; i < n; i ++) {
+		int r = i;
+		for (int j = i + 1; j < n; j ++)
+			if(fabs(A[j][i]) > fabs(A[r][i])) 
+                r = j;
+		if (r != i) 
+            for (int j = 0; j <= n; j ++) 
+                swap(A[r][j], A[i][j]);
+
+		for(int j = n; j >= i; j --) {
+			for(int k = i + 1; k < n; k ++)
+				A[k][j] -= A[k][i] / A[i][i] * A[i][j];
+		}
+	}
+
+	for(int i = n - 1; i >= 0; i --) {
+		for(int j = i + 1; j < n; j ++)
+			A[i][n] -= A[j][n] * A[i][j];
+		A[i][n] /= A[i][i];
+	}
 }
