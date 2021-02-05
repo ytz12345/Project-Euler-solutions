@@ -20,6 +20,7 @@ using std::swap;
 using std::min;
 using std::next_permutation;
 using std::make_pair;
+using std::bitset;
 
 typedef unsigned int uint;
 typedef long long ll;
