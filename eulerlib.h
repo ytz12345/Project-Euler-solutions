@@ -19,6 +19,7 @@ using std::string;
 using std::swap;
 using std::min;
 using std::next_permutation;
+using std::make_pair;
 
 typedef unsigned int uint;
 typedef long long ll;
