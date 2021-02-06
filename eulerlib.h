@@ -22,6 +22,8 @@ using std::next_permutation;
 using std::make_pair;
 using std::bitset;
 
+#define get_inv get_rev //函数alias
+
 typedef unsigned int uint;
 typedef long long ll;
 typedef pair<int, int> piir;
@@ -29,22 +31,25 @@ typedef pair<ll, ll> pr;
 typedef vector<pr> vp;
 typedef __int128 int128;
 
-ll sqr(ll x);
-bool is_sqr(ll x);
-bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);// is sqr(a) + sqr(b) == sqr(c)
-void get_ab_from_c(ll c, vector<pr> &v);//传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
-void get_prime(int n, int *p, int *v);//获取小于n的质数放入p,v[i]=1/0表示是/否为质数
-void get_phi(int n, int *phi, int *p, int *v);//获取质数的基础上添加了计算欧拉函数
-bool is_prime(ll x);
+
+ll crt(ll *m, ll *a, int n); //n个式子: y = mx + a, 下标从1开始。返回最小的正数 y = Mx + A
+void exgcd(ll a, ll b, ll &d, ll &x, ll &y); //x*a+y*b=gcd(a,b)=d
+void gauss(vector<vector<long double> > &A, int n); //高消, n个式子，每行n个参数，和1个结果。 结果在A[0...n-1][n]里
 ll gcd(ll x, ll y);
-void getFac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为个数
-#define getInv getRev
-void getRev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
-void print_time();//输出程序运行时间
+void get_ab_from_c(ll c, vector<pr> &v);//传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
+void get_fac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为个数
+void get_rev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 ll get_palindrome(ll x, int num, bool isOdd);//通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
+void get_phi(int n, int *phi, int *p, int *v);//获取质数的基础上添加了计算欧拉函数
+void get_prime(int n, int *p, int *v);//获取小于n的质数放入p,v[i]=1/0表示是/否为质数
+bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);// is sqr(a) + sqr(b) == sqr(c)
+bool is_prime(ll x);
+bool is_sqr(ll x);
+void print_time();//输出程序运行时间
 ll qpow(ll x, ll k, ll p); // (x^k)%p
 template<class T>void sort_and_unique(vector<T> &v);
-void gauss(vector<vector<long double> > &A, int n); //高消, n个式子，每行n个参数，和1个结果。 结果在A[0...n-1][n]里
+ll sqr(ll x);
+
 
 struct Sudoku { //数独，get获取输入
     int sum;
@@ -122,6 +127,7 @@ struct Sudoku { //数独，get获取输入
         puts(""); puts("");
     }
 };
+
 
 void print_time() {
     cout << "Time elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
@@ -352,4 +358,26 @@ void gauss(vector<vector<long double> > &A, int n) {
 			A[i][n] -= A[j][n] * A[i][j];
 		A[i][n] /= A[i][i];
 	}
+}
+
+void exgcd(ll a, ll b, ll &d, ll &x, ll &y) {
+    if (!b) {
+        d = a, x = 1, y = 0;
+        return;
+    }
+    exgcd(b, a % b, d, y, x);
+    y -= a / b * x;
+}
+ll crt(ll *m, ll *a, int n) {//n个式子: y = mx + a, 下标从1开始
+    ll A = a[1], M = m[1], d, x, y, m2;
+    for (int i = 2; i <= n; i ++) {// k1 * m1 - k2 * m2 = a2 - a1
+        exgcd(M, m[i], d, x, y);
+        if ((a[i] - A) % d) return -1;
+        m2 = M / d * m[i];
+        x = (a[i] - A) / d * x % m[i];
+        A = (A + x * M % m2) % m2;
+        if (A < 0) A += m2;//保证A>=0
+        M = m2;
+    }  
+    return A;//y = Mx + A
 }
