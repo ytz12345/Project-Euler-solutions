@@ -271,7 +271,7 @@ bool is_prime(ll x) {
     return !(PollardRho::millerRabin(x));
 }
 
-void getFac(ll n, ll *f) {
+void get_fac(ll n, ll *f) {
     PollardRho::getFac(n, f);
     sort (f + 1, f + f[0] + 1);
     f[0] = unique(f + 1, f + f[0] + 1) - f - 1;
@@ -293,7 +293,7 @@ std::ostream& operator<<(std::ostream& os, int128 t) {
     return os<<"";
 }
 
-void getRev(int n, int *fac, int *inv, int Mod) {
+void get_rev(int n, int *fac, int *inv, int Mod) {
     fac[0] = 1, inv[0] = 1, inv[1] = 1;
     for (int i = 1; i <= n; i ++) {
         fac[i] = 1ll * fac[i - 1] * i % Mod;
