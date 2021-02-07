@@ -31,8 +31,9 @@ typedef pair<ll, ll> pr;
 typedef vector<pr> vp;
 typedef __int128 int128;
 
-
+ll calc_phi(ll x); //计算phi(x)
 ll crt(ll *m, ll *a, int n); //n个式子: y = mx + a, 下标从1开始。返回最小的正数 y = Mx + A
+ll euler_power_down(ll c, ll x, ll t, ll p); // (c^(c^(...(c^x))))%p, 套了t次，求结果
 void exgcd(ll a, ll b, ll &d, ll &x, ll &y); //x*a+y*b=gcd(a,b)=d
 void gauss(vector<vector<long double> > &A, int n); //高消, n个式子，每行n个参数，和1个结果。 结果在A[0...n-1][n]里
 ll gcd(ll x, ll y);
@@ -380,4 +381,38 @@ ll crt(ll *m, ll *a, int n) {//n个式子: y = mx + a, 下标从1开始
         M = m2;
     }  
     return A;//y = Mx + A
+}
+
+ll euler_power_down(ll c, ll x, ll t, ll p) {
+    vector <ll> phi; phi.clear();
+    for (phi.pb(p); phi[int(phi.size()) - 1] != 1; )
+        phi.pb(calc_phi(phi[int(phi.size()) - 1]));
+    phi.pb(1); int tot = phi.size() - 1;
+    if (t > tot) {
+        if (x >= phi[tot]) x = x % phi[tot] + phi[tot];
+        for (int i = tot; i > 0; i --) {
+            x = qpow(c, x, phi[i - 1]);
+            if (gcd(c, x) != 1) x += phi[i - 1];
+        }
+        return x % phi[0];
+    } else {
+        ll phi_p = phi[1];
+        for (int i = 1; i <= t; i ++) {
+            if (x >= phi_p) x = x % phi_p + phi_p;
+            x = qpow(c, x, p);
+        }
+        return x % p;
+    }
+}
+
+ll calc_phi(ll x) {
+    ll y = x;
+    for (ll i = 2; i * i <= x; i ++)
+        if (x % i == 0) {
+            y /= i;
+            y *= i - 1;
+            while (x % i == 0) x /= i;
+        }
+    if (x ^ 1) y /= x, y *= x - 1;
+    return y; 
 }
