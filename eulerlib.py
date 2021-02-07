@@ -1,3 +1,80 @@
+from math import gcd
+from random import randint
+
+# 暴力算法
+def c(n, m):
+    res, j = 1, 1
+    for i in range(n - m + 1, n + 1):
+        res *= i
+        res //= j
+        j += 1
+    return res
+
+# (sqrt(a)+b) / c = k + 1 / ()
+def calc_sqrt_in_continued_fraction(x):
+    from math import sqrt
+
+    a, b, c = x, 0, 1
+    ks = []
+
+    vis = {}
+    while True:
+        if (a, b, c) in vis: break
+        vis[(a, b, c)] = True
+
+        k = int((sqrt(a) + b) / c)
+        ks.append(k)
+        b -= k * c
+        c = (a - b * b) // c
+        b = -b
+
+    return ks
+
+def digit_sum(x):
+    res = 0
+    while x != 0:
+        res += x % 10
+        x //= 10
+    return res
+
+# f1 = f2 = 1, return f[1,...,n]
+def get_fib(n, Mod = -1):
+    f = [0 for i in range(n + 1)]
+    f[1] = 1
+    for i in range(2, n + 1):
+        f[i] = f[i - 1] + f[i - 2]
+        if Mod != -1:
+            f[i] %= Mod
+    return f
+
+# 获取第n个 fib的前k位
+def get_fib_front_k(n, k):
+    from math import log
+    sqrt_5 = sqrt(5)
+    log_fib_n = (n * log((sqrt_5 + 1) / 2) - log(sqrt_5)) / log(10)
+    length = int(log_fib_n)
+    if length + 1 <= k:
+        return int(pow(10, log_fib_n))
+    else:
+        return int(pow(10, log_fib_n - (length - k + 1)))
+
+# 逼近sqrt(x)的分数迭代器
+def get_fraction_by_sqrt(x):
+    ks = calc_sqrt_in_continued_fraction(x)
+    l = len(ks)
+
+    def n_k(i):
+        if i < l: return ks[i]
+        return ks[(i - 1) % (l - 1) + 1]
+
+    i = 1
+    while True:
+        p, q = n_k(i), 1
+        for j in range(i)[::-1]:
+            p, q = q + p * n_k(j), p
+        yield p, q
+        i += 1
+
 #return p, v for i < n
 def get_prime(n): 
     p, v = [0 for i in range(n)], [0 for i in range(n)]
@@ -14,12 +91,123 @@ def get_prime(n):
     v[1] = 1
     return p, v
 
-def digit_sum(x):
-    res = 0
-    while x != 0:
-        res += x % 10
-        x //= 10
-    return res
+def get_prime_divisor(n):
+    assert n > 1
+
+    d = []
+    stack = [n]
+
+    while len(stack) > 0:
+        x = stack.pop()
+        if is_prime(x):
+            d.append(x)
+            continue
+        p = x
+        while p >= x:
+            p = pollard_rho(p, get_rand_int() % (x - 1) + 1)
+        stack.append(p)
+        stack.append(x // p)
+    
+    d = sorted(d)
+    rd = [d[0]]
+    for x in d:
+        if x != rd[-1]:
+            rd.append(x)
+        
+    return rd
+
+def get_rand_int(l = 0, r = 10 ** 50):
+    return randint(l, r)
+
+# 是否为回文数
+def is_palindrome(s):
+    s = str(s)
+    return s == s[::-1]
+
+# 数字是否包含[1,9]9个数，且不包含0
+def is_pandigital(s):
+    s = set(str(s))
+    return len(s) == 9 and '0' not in s
+
+# miller_rabin判素数
+def is_prime(n):
+    T = 20
+    n = int(n)
+    if n < 2: return False
+    x, t = n - 1, 0
+    while (x & 1) == 0: 
+        x >>= 1
+        t += 1
+    
+    flag = True
+    if t >= 1 and (x & 1) == 1:
+        for k in range(T):
+            a = get_rand_int() % (n - 1) + 1
+            if pollard_rho_check(a, n, x, t):
+                flag = True
+                break
+            flag = False
+    
+    if flag == False or n == 2: return True
+    return False
+
+def is_sqr(x):
+    from math import sqrt
+    y = int(sqrt(x))
+    return sqr(y - 1) == x or sqr(y) == x or sqr(y + 1) == x 
+
+def next_permutation(p):
+    n = len(p)
+    if sum(p[i] < p[i + 1] for i in range(n - 1)) == 0:
+        return False
+    
+    pos = -1
+    for i in range(n - 1)[::-1]:
+        if p[i] < p[i + 1]:
+            pos = i
+            break
+    
+    for i in range(n)[::-1]:
+        if p[i] > p[pos]:
+            q = p[:pos] + [p[i]] + p[i + 1:][::-1] + [p[pos]] + p[pos + 1:i][::-1]
+            for j in range(n):
+                p[j] = q[j]
+            return True
+
+def pollard_rho(x, c):
+    i, k = 1, 2
+    y = x0 = get_rand_int() % x
+    while True:
+        i += 1
+        x0 = pow(x0, 2, x) + c % x
+        d = abs(gcd(y - x0, x))
+        if d != 1 and d != x: 
+            return d
+        if y == x0: 
+            return x
+        if i == k: 
+            y = x0
+            k <<= 1
+
+def pollard_rho_check(a, n, x, t):
+    last = res = pow(a, x, n)
+    for i in range(1, t + 1):
+        res = pow(res, 2, n)
+        if res == 1 and last != 1 and last != n - 1: return True
+        last = res
+    return res != 1
+
+def sqr(x):return x * x
+
+#牛顿迭代开根
+def sqrt(a, k = 20):
+    if a == 0:return 0
+    assert a > 0
+    x = 1
+    for i in range(k):
+        x += a / x / 2 - x / 2
+    return x
+
 
 class matrix():
     def __init__(self, k = 2):
@@ -27,7 +215,7 @@ class matrix():
         self.c = [[0 for i in range(k)] for i in range(k)]
     
     def __mul__(self, a):
-        assert(self.k == a.k)
+        assert self.k == a.k
         b = matrix(self.k)
         for k in range(self.k):
             for i in range(self.k):
@@ -55,38 +243,18 @@ class matrix():
 
         return b
 
-def get_divisor(x): #O(sqrt)
-    d = []
-    i = 1
-    while i * i <= x:
-        if x % i == 0:
-            d.append(i)
-            if i * i == x:
-                break
-            d.append(x // i)
-        i += 1
-    return d
+# 装饰器
+class memoize(object):
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+    
+    def __call__(self, *args):
+        if args not in self.cache:
+            self.cache[args] = self.func(*args)
+        return self.cache[args]
 
-def c(n, m):
-    res, j = 1, 1
-    for i in range(n - m + 1, n + 1):
-        res *= i
-        res //= j
-        j += 1
-    return res
-
-def is_palindrome(s):
-    s = str(s)
-    return s == s[::-1]
-
-def is_prime(x):
-    i = 2
-    while i * i <= x:
-        if x % i == 0:
-            return False
-        i += 1
-    return True
-
+# 罗马数字和十进制数字互转
 class Roman():
     def __init__(self):
         self.roman_to_int = {'I':1, 'V':5, 'X':10, 'L':50, 'C':100, 'D':500, 'M':1000}
@@ -116,6 +284,25 @@ class Roman():
 
         return s
 
+class point(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, other):
+        return point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return point(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, other):
+        return self.x * other.x + self.y * other.y
+
+    @staticmethod
+    def cross(a, b):
+        return a.x * b.y - a.y * b.x
+
+# 扑克牌
 class Poker():
     def __init__(self, s):
         self.num = s[0]
@@ -134,6 +321,7 @@ class Poker():
         else:
             self.num = int(self.num)
 
+# 打扑克
 class Poker_Player():
     def __init__(self, pokers):
         self.pokers = pokers
@@ -273,129 +461,7 @@ class Poker_Player():
                 if self.cmp_val[i] != another_player.cmp_val[i]:
                     return self.cmp_val[i] > another_player.cmp_val[i]
 
-def next_permutation(p):
-    n = len(p)
-    if sum(p[i] < p[i + 1] for i in range(n - 1)) == 0:
-        return False
-    
-    pos = -1
-    for i in range(n - 1)[::-1]:
-        if p[i] < p[i + 1]:
-            pos = i
-            break
-    
-    for i in range(n)[::-1]:
-        if p[i] > p[pos]:
-            q = p[:pos] + [p[i]] + p[i + 1:][::-1] + [p[pos]] + p[pos + 1:i][::-1]
-            for j in range(n):
-                p[j] = q[j]
-            return True
 
-def sqr(x):return x * x
-
-def is_sqr(x):
-    from math import sqrt
-    y = int(sqrt(x))
-    return sqr(y - 1) == x or sqr(y) == x or sqr(y + 1) == x 
-
-class point(object):
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __add__(self, other):
-        return point(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other):
-        return point(self.x - other.x, self.y - other.y)
-
-    def __mul__(self, other):
-        return self.x * other.x + self.y * other.y
-
-    @staticmethod
-    def cross(a, b):
-        return a.x * b.y - a.y * b.x
-
-def get_fib(n, Mod = -1):#f1 = f2 = 1, return f[1,...,n]
-    f = [0 for i in range(n + 1)]
-    f[1] = 1
-    for i in range(2, n + 1):
-        f[i] = f[i - 1] + f[i - 2]
-        if Mod != -1:
-            f[i] %= Mod
-    return f
-
-def is_pandigital(s):
-    s = set(str(s))
-    return len(s) == 9 and '0' not in s
-
-#牛顿迭代开根
-def sqrt(a, k = 20):
-    if a == 0:return 0
-    assert a > 0
-    x = 1
-    for i in range(k):
-        x += a / x / 2 - x / 2
-    return x
-
-def get_fib_front_k(n, k):
-    from math import log
-    sqrt_5 = sqrt(5)
-    log_fib_n = (n * log((sqrt_5 + 1) / 2) - log(sqrt_5)) / log(10)
-    length = int(log_fib_n)
-    if length + 1 <= k:
-        return int(pow(10, log_fib_n))
-    else:
-        return int(pow(10, log_fib_n - (length - k + 1)))
-
-# (sqrt(a)+b) / c = k + 1 / ()
-def calc_sqrt_in_continued_fraction(x):
-    from math import sqrt
-
-    a, b, c = x, 0, 1
-    ks = []
-
-    vis = {}
-    while True:
-        if (a, b, c) in vis: break
-        vis[(a, b, c)] = True
-
-        k = int((sqrt(a) + b) / c)
-        ks.append(k)
-        b -= k * c
-        c = (a - b * b) // c
-        b = -b
-
-    return ks
-
-# 逼近sqrt(x)的分数迭代器
-def get_fraction_by_sqrt(x):
-    ks = calc_sqrt_in_continued_fraction(x)
-    l = len(ks)
-
-    def n_k(i):
-        if i < l: return ks[i]
-        return ks[(i - 1) % (l - 1) + 1]
-
-    i = 1
-    while True:
-        p, q = n_k(i), 1
-        for j in range(i)[::-1]:
-            p, q = q + p * n_k(j), p
-        yield p, q
-        i += 1
-
-#装饰器
-class memoize(object):
-    def __init__(self, func):
-        self.func = func
-        self.cache = {}
-    
-    def __call__(self, *args):
-        if args not in self.cache:
-            self.cache[args] = self.func(*args)
-        return self.cache[args]
-        
 if __name__ == '__main__':
 
     @memoize
