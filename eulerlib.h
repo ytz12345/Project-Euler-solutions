@@ -39,10 +39,11 @@ void gauss(vector<vector<long double> > &A, int n); //高消, n个式子，每�
 ll gcd(ll x, ll y);
 void get_ab_from_c(ll c, vector<pr> &v);//传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
 void get_fac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为个数
-void get_rev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 ll get_palindrome(ll x, int num, bool isOdd);//通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
 void get_phi(int n, int *phi, int *p, int *v);//获取质数的基础上添加了计算欧拉函数
 void get_prime(int n, int *p, int *v);//获取小于n的质数放入p,v[i]=1/0表示是/否为质数
+int get_repunit(int x); //min(y) for int('1'*y)%x==0, 如果不存在这样的y返回x。负责度O(y)
+void get_rev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);// is sqr(a) + sqr(b) == sqr(c)
 bool is_prime(ll x);
 bool is_sqr(ll x);
@@ -415,4 +416,21 @@ ll calc_phi(ll x) {
         }
     if (x ^ 1) y /= x, y *= x - 1;
     return y; 
+}
+
+int get_repunit(int x) {
+    static int f, y[10]; 
+    static int sum, i, j, k; sum = f = 0;
+    for (i = 0; i < 10; i ++) y[i] = -1;
+    for (i = 0; i < 10; i ++) y[x * i % 10] = i;
+    for (i = 0; (i + 1) != sum; i ++) {
+        j = (1 - f) % 10;
+        if (j < 0) j += 10;
+        if (y[j] == -1) return 0;
+        j = y[j];
+        sum += 1 - f;
+        f = (f + x * j) / 10; 
+        sum += f;  
+    }
+    return sum;
 }
