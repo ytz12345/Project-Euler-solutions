@@ -22,8 +22,6 @@ using std::next_permutation;
 using std::make_pair;
 using std::bitset;
 
-#define get_inv get_rev //函数alias
-
 typedef unsigned int uint;
 typedef long long ll;
 typedef pair<int, int> piir;
@@ -31,24 +29,40 @@ typedef pair<ll, ll> pr;
 typedef vector<pr> vp;
 typedef __int128 int128;
 
-ll calc_phi(ll x); //计算phi(x)
-ll crt(ll *m, ll *a, int n); //n个式子: y = mx + a, 下标从1开始。返回最小的正数 y = Mx + A
-ll euler_power_down(ll c, ll x, ll t, ll p); // (c^(c^(...(c^x))))%p, 套了t次，求结果
-void exgcd(ll a, ll b, ll &d, ll &x, ll &y); //x*a+y*b=gcd(a,b)=d
-void gauss(vector<vector<long double> > &A, int n); //高消, n个式子，每行n个参数，和1个结果。 结果在A[0...n-1][n]里
+// 计算phi(x)
+ll calc_phi(ll x); 
+// n个式子: y = mx + a, 下标从1开始。返回最小的正数 y = Mx + A
+ll crt(ll *m, ll *a, int n); 
+// (c^(c^(...(c^x))))%p, 套了t次，求结果
+ll euler_power_down(ll c, ll x, ll t, ll p); 
+// x*a+y*b=gcd(a,b)=d
+void exgcd(ll a, ll b, ll &d, ll &x, ll &y); 
+// 高消, n个式子，每行n个参数，和1个结果。 结果在A[0...n-1][n]里
+void gauss(vector<vector<long double> > &A, int n); 
 ll gcd(ll x, ll y);
-void get_ab_from_c(ll c, vector<pr> &v);//传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
-void get_fac(ll n, ll *f);//获取n的所有质因数，有序不重复，f[0]为个数
-ll get_palindrome(ll x, int num, bool isOdd);//通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
-void get_phi(int n, int *phi, int *p, int *v);//获取质数的基础上添加了计算欧拉函数
-void get_prime(int n, int *p, int *v);//获取小于n的质数放入p,v[i]=1/0表示是/否为质数
-int get_repunit(int x); //min(y) for int('1'*y)%x==0, 如果不存在这样的y返回x。负责度O(y)
-void get_rev(int n, int *fac, int *inv, int Mod);//获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
-bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);// is sqr(a) + sqr(b) == sqr(c)
+// 传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
+void get_ab_from_c(ll c, vector<pr> &v);
+// 获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
+void get_inv(int n, int *fac, int *inv, int Mod);
+// 通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
+ll get_palindrome(ll x, int num, bool isOdd);
+// 获取质数的基础上添加了计算欧拉函数
+void get_phi(int n, int *phi, int *p, int *v);
+// 获取小于n的质数放入p,v[i]=1/0表示是/否为质数
+void get_prime(int n, int *p, int *v);
+// 获取n的所有质因数，有序不重复，f[0]为个数
+void get_prime_divisor(ll n, ll *f);
+// min(y) for int('1'*y)%x==0, 如果不存在这样的y返回x。复杂度O(y)
+int get_repunit(int x); 
+// is sqr(a) + sqr(b) == sqr(c)
+bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);
 bool is_prime(ll x);
-bool is_sqr(ll x);
-void print_time();//输出程序运行时间
-ll qpow(ll x, ll k, ll p); // (x^k)%p
+// if x is sqr return sqrt(x), else return 0;
+ll is_sqr(ll x);
+// 输出程序运行时间
+void print_time();
+// (x^k)%p
+ll qpow(ll x, ll k, ll p); 
 template<class T>void sort_and_unique(vector<T> &v);
 ll sqr(ll x);
 
@@ -273,7 +287,7 @@ bool is_prime(ll x) {
     return !(PollardRho::millerRabin(x));
 }
 
-void get_fac(ll n, ll *f) {
+void get_prime_divisor(ll n, ll *f) {
     PollardRho::getFac(n, f);
     sort (f + 1, f + f[0] + 1);
     f[0] = unique(f + 1, f + f[0] + 1) - f - 1;
@@ -295,7 +309,7 @@ std::ostream& operator<<(std::ostream& os, int128 t) {
     return os<<"";
 }
 
-void get_rev(int n, int *fac, int *inv, int Mod) {
+void get_inv(int n, int *fac, int *inv, int Mod) {
     fac[0] = 1, inv[0] = 1, inv[1] = 1;
     for (int i = 1; i <= n; i ++) {
         fac[i] = 1ll * fac[i - 1] * i % Mod;
@@ -305,9 +319,9 @@ void get_rev(int n, int *fac, int *inv, int Mod) {
         inv[i] = 1ll * inv[i] * inv[i - 1] % Mod;
 }
 
-bool is_sqr(ll x) {
-    ll y = sqrt(x);
-    return sqr(y - 1) == x || sqr(y) == x || sqr(y + 1) == x; 
+ll is_sqr(ll x) {
+    ll y = sqrt(x) + 0.9;
+    return sqr(y) == x ? y : 0; 
 }
 
 ll get_palindrome(ll x, int num, bool isOdd = false) {
