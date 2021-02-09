@@ -57,6 +57,8 @@ int get_repunit(int x);
 // is sqr(a) + sqr(b) == sqr(c)
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);
 bool is_prime(ll x);
+// special set: problem 103 105 106
+bool is_set_special(vector<int> &v);
 // if x is sqr return sqrt(x), else return 0;
 ll is_sqr(ll x);
 // 输出程序运行时间
@@ -447,4 +449,26 @@ int get_repunit(int x) {
         sum += f;  
     }
     return sum;
+}
+
+bool is_set_special(vector<int> &v) {
+    int n = v.size(); 
+    vector<int> s, c; 
+    s.resize(1 << n), c.resize(1 << n);
+    for (int i = 0; i < (1 << n); i ++) {
+        s[i] = c[i] = 0;
+        for (int j = 0; j < n; j ++)
+            if (i >> j & 1)
+                s[i] += v[j], c[i] ++;
+    }
+    for (int i = 1; i < (1 << n); i ++)
+        for (int j = i + 1; j < (1 << n); j ++) {
+            if (s[i] == s[j]) return 0;
+            if (c[i] < c[j]) {
+                if (s[i] > s[j]) return 0;
+            } else if (c[i] > c[j]) {
+                if (s[i] < s[j]) return 0;
+            }
+        }
+    return 1;
 }
