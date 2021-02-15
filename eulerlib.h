@@ -1,33 +1,38 @@
 #include <bits/stdc++.h>
 
+#define mp make_pair
 #define pb push_back
 
-using std::vector;
-using std::pair;
-using std::sort;
-using std::unique;
-using std::cout;
-using std::endl;
-using std::map;
+using std::bitset;
 using std::cin;
-using std::set;
-using std::unordered_map;
-using std::lower_bound;
-using std::max;
+using std::cout;
+using std::deque;
+using std::endl;
 using std::ios;
-using std::string;
-using std::swap;
+using std::lower_bound;
+using std::make_pair;
+using std::map;
+using std::max;
 using std::min;
 using std::next_permutation;
-using std::make_pair;
-using std::bitset;
+using std::pair;
+using std::random_shuffle;
+using std::set;
+using std::sort;
+using std::string;
+using std::swap;
+using std::unique;
+using std::unordered_map;
+using std::vector;
 
-typedef unsigned int uint;
+typedef __int128 int128;
+typedef double db;
 typedef long long ll;
+typedef pair<db, db> pdd;
 typedef pair<int, int> piir;
 typedef pair<ll, ll> pr;
+typedef unsigned int uint;
 typedef vector<pr> vp;
-typedef __int128 int128;
 
 // 计算phi(x)
 ll calc_phi(ll x); 
@@ -54,6 +59,7 @@ void get_prime(int n, int *p, int *v);
 void get_prime_divisor(ll n, ll *f);
 // min(y) for int('1'*y)%x==0, 如果不存在这样的y返回x。复杂度O(y)
 int get_repunit(int x); 
+pair<bool, pdd> get_equation_solution(double A, double B, double C);//一元二次方程的解
 // is sqr(a) + sqr(b) == sqr(c)
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);
 bool is_prime(ll x);
@@ -66,7 +72,7 @@ void print_time();
 // (x^k)%p
 ll qpow(ll x, ll k, ll p); 
 template<class T>void sort_and_unique(vector<T> &v);
-ll sqr(ll x);
+template<class T>T sqr(T x);
 
 
 struct Sudoku { //数独，get获取输入
@@ -151,7 +157,7 @@ void print_time() {
     cout << "Time elapsed: " << 1.0 * clock() / CLOCKS_PER_SEC << " s.\n";
 }
 
-ll sqr(ll x) {return x * x;}
+template<class T>T sqr(T x) {return x * x;}
 
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c) {
     return sqr(a) + sqr(b) == sqr(c);
@@ -471,4 +477,11 @@ bool is_set_special(vector<int> &v) {
             }
         }
     return 1;
+}
+
+pair<bool, pdd> get_equation_solution(double A, double B, double C) {
+    double D = sqr(B) - A * C * 4;
+    if (D < 0) return mp(false, mp(0, 0));
+    D = sqrt(D);
+    return mp(true, pdd((-B + D) / (A * 2), (-B - D) / (A * 2))); 
 }
