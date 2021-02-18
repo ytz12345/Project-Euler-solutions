@@ -47,6 +47,8 @@ void gauss(vector<vector<long double> > &A, int n);
 ll gcd(ll x, ll y);
 // 传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
 void get_ab_from_c(ll c, vector<pr> &v);
+//  求一元二次方程的解
+pair<bool, pdd> get_equation_solution(double A, double B, double C);
 // 获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
 void get_inv(int n, int *fac, int *inv, int Mod);
 // 通过翻转x获取回文数 y=str(x)+str(num)+str(x)[::-1] if isOdd==true; 需要特殊处理回文数[0,9]
@@ -59,7 +61,8 @@ void get_prime(int n, int *p, int *v);
 void get_prime_divisor(ll n, ll *f);
 // min(y) for int('1'*y)%x==0, 如果不存在这样的y返回x。复杂度O(y)
 int get_repunit(int x); 
-pair<bool, pdd> get_equation_solution(double A, double B, double C);//一元二次方程的解
+// 预处理莫比乌斯函数
+void get_u(int n, int *p, int *v, int *u);
 // is sqr(a) + sqr(b) == sqr(c)
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);
 bool is_prime(ll x);
@@ -72,6 +75,7 @@ void print_time();
 // (x^k)%p
 ll qpow(ll x, ll k, ll p); 
 template<class T>void sort_and_unique(vector<T> &v);
+// 这里有个坑就是需要传入参数时手动int转ll，不然会爆
 template<class T>T sqr(T x);
 
 
@@ -484,4 +488,19 @@ pair<bool, pdd> get_equation_solution(double A, double B, double C) {
     if (D < 0) return mp(false, mp(0, 0));
     D = sqrt(D);
     return mp(true, pdd((-B + D) / (A * 2), (-B - D) / (A * 2))); 
+}
+
+void get_u(int n, int *p, int *v, int *u) {
+    u[1] = 1;
+    for (int i = 2; i < n; i ++) {
+        if (!v[i]) u[i] = -1, p[++ p[0]] = i;
+        for (int j = 1; j <= p[0] && i * p[j] < n; j ++) {
+            v[i * p[j]] = 1;
+            if (i % p[j] == 0) {
+                u[i * p[j]] = 0;
+                break;
+            }
+            u[i * p[j]] = -u[i];
+        }
+    }
 }

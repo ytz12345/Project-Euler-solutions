@@ -12,8 +12,6 @@ def c(n, m):
 
 # (sqrt(a)+b) / c = k + 1 / ()
 def calc_sqrt_in_continued_fraction(x):
-    from math import sqrt
-
     a, b, c = x, 0, 1
     ks = []
 
@@ -152,7 +150,6 @@ def is_prime(n):
     return False
 
 def is_sqr(x):
-    from math import sqrt
     y = int(sqrt(x))
     return sqr(y - 1) == x or sqr(y) == x or sqr(y + 1) == x 
 
@@ -464,16 +461,7 @@ class Poker_Player():
 
 if __name__ == '__main__':
 
-    @memoize
-    def test(x):
-        z = 0
-        for i in range(10 ** 6):
-            z += i * i
-        return ((z * z // z + 1) // z)
-
-    from time import time
-    print(time())
-    print(test(1))
-    print(time())
-    print(test(1))
-    print(time())
+    n = 123456789
+    print(sqrt(n))
+    import math
+    print(math.sqrt(n))
