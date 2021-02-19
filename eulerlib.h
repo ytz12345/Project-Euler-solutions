@@ -23,6 +23,7 @@ using std::string;
 using std::swap;
 using std::unique;
 using std::unordered_map;
+using std::upper_bound;
 using std::vector;
 
 typedef __int128 int128;
@@ -30,9 +31,9 @@ typedef double db;
 typedef long long ll;
 typedef pair<db, db> pdd;
 typedef pair<int, int> piir;
-typedef pair<ll, ll> pr;
+typedef pair<ll, ll> pllr;
 typedef unsigned int uint;
-typedef vector<pr> vp;
+typedef vector<pllr> vp;
 
 // 计算phi(x)
 ll calc_phi(ll x); 
@@ -46,7 +47,7 @@ void exgcd(ll a, ll b, ll &d, ll &x, ll &y);
 void gauss(vector<vector<long double> > &A, int n); 
 ll gcd(ll x, ll y);
 // 传入c, 计算所有无序数对(a,b)使得a^2+b^2=c^2且a>0,b>0
-void get_ab_from_c(ll c, vector<pr> &v);
+void get_ab_from_c(ll c, vector<pllr> &v);
 //  求一元二次方程的解
 pair<bool, pdd> get_equation_solution(double A, double B, double C);
 // 获取1-n的阶乘和逆，对Mod取模。需要保证Mod为质数
@@ -56,22 +57,22 @@ ll get_palindrome(ll x, int num, bool isOdd);
 // 获取质数的基础上添加了计算欧拉函数
 void get_phi(int n, int *phi, int *p, int *v);
 // 获取小于n的质数放入p,v[i]=1/0表示是/否为质数
-void get_prime(int n, int *p, int *v);
+void get_pllrime(int n, int *p, int *v);
 // 获取n的所有质因数，有序不重复，f[0]为个数
-void get_prime_divisor(ll n, ll *f);
+void get_pllrime_divisor(ll n, ll *f);
 // min(y) for int('1'*y)%x==0, 如果不存在这样的y返回x。复杂度O(y)
 int get_repunit(int x); 
 // 预处理莫比乌斯函数
 void get_u(int n, int *p, int *v, int *u);
 // is sqr(a) + sqr(b) == sqr(c)
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);
-bool is_prime(ll x);
-// special set: problem 103 105 106
+bool is_pllrime(ll x);
+// special set: pllroblem 103 105 106
 bool is_set_special(vector<int> &v);
 // if x is sqr return sqrt(x), else return 0;
 ll is_sqr(ll x);
 // 输出程序运行时间
-void print_time();
+void pllrint_time();
 // (x^k)%p
 ll qpow(ll x, ll k, ll p); 
 template<class T>void sort_and_unique(vector<T> &v);
@@ -85,14 +86,14 @@ struct Sudoku { //数独，get获取输入
     int t[10][10];
     char s[10][10];
     piir order[100];
-    int pre[10][10][10];
+    int pllre[10][10][10];
 
     void get() {
         for (int i = 0; i < 9; i ++) {
             scanf("%s", s[i]);
             for (int j = 0; j < 9; j ++) {
                 t[i][j] = s[i][j] - '0';
-                pre[i][j][0] = 0;
+                pllre[i][j][0] = 0;
             }
         }
     }
@@ -115,8 +116,8 @@ struct Sudoku { //数独，get获取输入
     bool dfs(int now) {
         if (now == sum) return 1;
         piir no = order[now];
-        for (int i = 1; i <= pre[no.first][no.second][0]; i ++) {
-            t[no.first][no.second] = pre[no.first][no.second][i];
+        for (int i = 1; i <= pllre[no.first][no.second][0]; i ++) {
+            t[no.first][no.second] = pllre[no.first][no.second][i];
             if (check(no.first, no.second) && dfs(now + 1)) return 1;
         }
         t[no.first][no.second] = 0;
@@ -137,19 +138,19 @@ struct Sudoku { //数独，get获取输入
                     for (int p = j / 3 * 3, p_up = p + 3; p < p_up; p ++)
                         if (s[k][p] != '0') used[s[k][p] - '0'] = 1;
                 for (int k = 1; k < 10; k ++)
-                    if (!used[k]) pre[i][j][++ pre[i][j][0]] = k;
+                    if (!used[k]) pllre[i][j][++ pllre[i][j][0]] = k;
                 order[sum ++] = piir(i, j);
             }
         }
 
         sort (order, order + sum, [&](piir x, piir y){
-            return pre[x.first][x.second][0] < pre[y.first][y.second][0];
+            return pllre[x.first][x.second][0] < pllre[y.first][y.second][0];
         });
         
         return dfs(0);
     }
 
-    void print() {
+    void pllrint() {
         for (int i = 0; i < 9; i ++, puts(""))
             for (int j = 0; j < 9; printf("%d", t[i][j ++]));
         puts(""); puts("");
@@ -167,16 +168,16 @@ bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c) {
     return sqr(a) + sqr(b) == sqr(c);
 }
 
-void push_back_first_le_second(vp &v, const pr &p) {
+void push_back_first_le_second(vp &v, const pllr &p) {
     if (p.first <= p.second) v.pb(p);
-    else v.pb(pr(p.second, p.first));
+    else v.pb(pllr(p.second, p.first));
 }
 
 void get_ab_from_c_div_k(ll c, ll k, vp &v) {// c = c / k
     for (ll i = 1, j = int(sqrt(c)) + 5; i * i <= c; i ++) {
         while (i * i + j * j > c) j --; if (j <= i) return;
         if (i * i + j * j == c && is_ab_sqr_sum_eq_c(i * j * 2, abs(j * j - i * i), c))
-            push_back_first_le_second(v, pr(i * j * 2 * k, abs(j * j - i * i) * k));
+            push_back_first_le_second(v, pllr(i * j * 2 * k, abs(j * j - i * i) * k));
     }
 }
 
@@ -190,7 +191,7 @@ void get_ab_from_c(ll c, vp &v) {
     sort(v.begin(), v.end()); v.resize(unique(v.begin(), v.end()) - v.begin());
 }
 
-void get_prime(int n, int *p, int *v) {
+void get_pllrime(int n, int *p, int *v) {
     p[0] = 0, v[0] = v[1] = 1;
     for (int i = 2; i < n; i ++) {
         if (!v[i]) p[++ p[0]] = i;
@@ -248,7 +249,7 @@ namespace PollardRho {
         if (res != 1) return 1;
         return 0;
     }
-    //素数判定函数 (ret = 0) -> prime
+    //素数判定函数 (ret = 0) -> pllrime
     bool millerRabin(ll n) {
         if (n < 2) return 1;
         ll x = n - 1, t = 0;
@@ -295,11 +296,11 @@ namespace PollardRho {
     }
 }
 
-bool is_prime(ll x) {
+bool is_pllrime(ll x) {
     return !(PollardRho::millerRabin(x));
 }
 
-void get_prime_divisor(ll n, ll *f) {
+void get_pllrime_divisor(ll n, ll *f) {
     PollardRho::getFac(n, f);
     sort (f + 1, f + f[0] + 1);
     f[0] = unique(f + 1, f + f[0] + 1) - f - 1;
