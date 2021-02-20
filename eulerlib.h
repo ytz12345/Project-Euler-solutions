@@ -57,22 +57,24 @@ ll get_palindrome(ll x, int num, bool isOdd);
 // 获取质数的基础上添加了计算欧拉函数
 void get_phi(int n, int *phi, int *p, int *v);
 // 获取小于n的质数放入p,v[i]=1/0表示是/否为质数
-void get_pllrime(int n, int *p, int *v);
+void get_prime(int n, int *p, int *v);
 // 获取n的所有质因数，有序不重复，f[0]为个数
-void get_pllrime_divisor(ll n, ll *f);
+void get_prime_divisor(ll n, ll *f);
 // min(y) for int('1'*y)%x==0, 如果不存在这样的y返回x。复杂度O(y)
 int get_repunit(int x); 
 // 预处理莫比乌斯函数
 void get_u(int n, int *p, int *v, int *u);
 // is sqr(a) + sqr(b) == sqr(c)
 bool is_ab_sqr_sum_eq_c(ll a, ll b, ll c);
-bool is_pllrime(ll x);
-// special set: pllroblem 103 105 106
+// A positive number is pandigital in base b if it contains all digits from 0 to b - 1 at least once when written in base b.
+bool is_pandigital(ll x, char b);
+bool is_prime(ll x);
+// special set: problem 103 105 106
 bool is_set_special(vector<int> &v);
 // if x is sqr return sqrt(x), else return 0;
 ll is_sqr(ll x);
 // 输出程序运行时间
-void pllrint_time();
+void print_time();
 // (x^k)%p
 ll qpow(ll x, ll k, ll p); 
 template<class T>void sort_and_unique(vector<T> &v);
@@ -86,14 +88,14 @@ struct Sudoku { //数独，get获取输入
     int t[10][10];
     char s[10][10];
     piir order[100];
-    int pllre[10][10][10];
+    int pre[10][10][10];
 
     void get() {
         for (int i = 0; i < 9; i ++) {
             scanf("%s", s[i]);
             for (int j = 0; j < 9; j ++) {
                 t[i][j] = s[i][j] - '0';
-                pllre[i][j][0] = 0;
+                pre[i][j][0] = 0;
             }
         }
     }
@@ -116,8 +118,8 @@ struct Sudoku { //数独，get获取输入
     bool dfs(int now) {
         if (now == sum) return 1;
         piir no = order[now];
-        for (int i = 1; i <= pllre[no.first][no.second][0]; i ++) {
-            t[no.first][no.second] = pllre[no.first][no.second][i];
+        for (int i = 1; i <= pre[no.first][no.second][0]; i ++) {
+            t[no.first][no.second] = pre[no.first][no.second][i];
             if (check(no.first, no.second) && dfs(now + 1)) return 1;
         }
         t[no.first][no.second] = 0;
@@ -138,19 +140,19 @@ struct Sudoku { //数独，get获取输入
                     for (int p = j / 3 * 3, p_up = p + 3; p < p_up; p ++)
                         if (s[k][p] != '0') used[s[k][p] - '0'] = 1;
                 for (int k = 1; k < 10; k ++)
-                    if (!used[k]) pllre[i][j][++ pllre[i][j][0]] = k;
+                    if (!used[k]) pre[i][j][++ pre[i][j][0]] = k;
                 order[sum ++] = piir(i, j);
             }
         }
 
         sort (order, order + sum, [&](piir x, piir y){
-            return pllre[x.first][x.second][0] < pllre[y.first][y.second][0];
+            return pre[x.first][x.second][0] < pre[y.first][y.second][0];
         });
         
         return dfs(0);
     }
 
-    void pllrint() {
+    void print() {
         for (int i = 0; i < 9; i ++, puts(""))
             for (int j = 0; j < 9; printf("%d", t[i][j ++]));
         puts(""); puts("");
@@ -191,7 +193,7 @@ void get_ab_from_c(ll c, vp &v) {
     sort(v.begin(), v.end()); v.resize(unique(v.begin(), v.end()) - v.begin());
 }
 
-void get_pllrime(int n, int *p, int *v) {
+void get_prime(int n, int *p, int *v) {
     p[0] = 0, v[0] = v[1] = 1;
     for (int i = 2; i < n; i ++) {
         if (!v[i]) p[++ p[0]] = i;
@@ -249,7 +251,7 @@ namespace PollardRho {
         if (res != 1) return 1;
         return 0;
     }
-    //素数判定函数 (ret = 0) -> pllrime
+    //素数判定函数 (ret = 0) -> prime
     bool millerRabin(ll n) {
         if (n < 2) return 1;
         ll x = n - 1, t = 0;
@@ -296,11 +298,11 @@ namespace PollardRho {
     }
 }
 
-bool is_pllrime(ll x) {
+bool is_prime(ll x) {
     return !(PollardRho::millerRabin(x));
 }
 
-void get_pllrime_divisor(ll n, ll *f) {
+void get_prime_divisor(ll n, ll *f) {
     PollardRho::getFac(n, f);
     sort (f + 1, f + f[0] + 1);
     f[0] = unique(f + 1, f + f[0] + 1) - f - 1;
@@ -504,4 +506,12 @@ void get_u(int n, int *p, int *v, int *u) {
             u[i * p[j]] = -u[i];
         }
     }
+}
+
+bool is_pandigital(ll x, char b) {
+    assert(b > 1);
+
+    static unordered_map<char, bool> mp; mp.clear();
+    while (x != 0) mp[x % b] = 1, x /= b;
+    return mp.size() == b;
 }
